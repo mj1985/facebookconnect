@@ -1,0 +1,51 @@
+<script type="text/javascript">
+        var newwindow;
+        var intId;
+        function fb_connect() {
+            var  screenX        = typeof window.screenX != 'undefined' ? window.screenX : window.screenLeft,
+                 screenY        = typeof window.screenY != 'undefined' ? window.screenY : window.screenTop,
+                 outerWidth     = typeof window.outerWidth != 'undefined' ? window.outerWidth : document.body.clientWidth,
+                 outerHeight    = typeof window.outerHeight != 'undefined' ? window.outerHeight : (document.body.clientHeight - 22),
+                 width    = 500,
+                 height   = 270,
+                 left     = parseInt(screenX + ((outerWidth - width) / 2), 10),
+                 top      = parseInt(screenY + ((outerHeight - height) / 2.5), 10),
+                 features = (
+                    'width=' + width +
+                    ',height=' + height +
+                    ',left=' + left +
+                    ',top=' + top
+                  );
+
+            newwindow=window.open('<?php echo $this->fb_login_url; ?>','fb_connect',features);
+            if (window.focus) {newwindow.focus()}
+            return false;
+        }
+
+ </script>
+
+<?php
+    $this->import('FrontendUser', 'User');
+?>
+
+<?php if (!($this->Session->get('TL_USER_LOGGED_IN') && $this->User->fb_user_id > 0)): ?>
+<div class="<?php echo $this->class; ?>"<?php echo $this->cssID; ?><?php if ($this->style): ?> style="<?php echo $this->style; ?>"<?php endif; ?>>
+    <?php if ($this->headline): ?>
+        <<?php echo $this->hl; ?>><?php echo $this->headline; ?></<?php echo $this->hl; ?>>
+    <?php endif; ?>
+    <div id="fbLogin"><?php if($this->fb_feCssAppearance){ $GLOBALS['TL_CSS'][] = TL_PLUGINS_URL . 'system/modules/FacebookConnect/assets/facebookconnectbutton.css'; echo '<div class="icon"></div>';} ?>
+        <a href="#" onclick="fb_connect();return false;">
+        <?php
+            if (!$this->Session->get('TL_USER_LOGGED_IN')) {
+                if(!$this->fb_changeFeMessage)
+                    echo $GLOBALS['TL_LANG']['MSC']['fb_feMessage'];
+                else
+                    echo $this->fb_feMessage;
+            } elseif ($this->Session->get('TL_USER_LOGGED_IN') && $this->User->fb_user_id == 0) {
+                echo $GLOBALS['TL_LANG']['MSC']['fb_feMessageConnectAccount'];
+            }
+        ?>
+        </a>
+	</div>
+</div>
+<?php endif; ?>
