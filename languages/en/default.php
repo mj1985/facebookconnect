@@ -15,10 +15,10 @@
 /**
  * Front end modules
  */
-$GLOBALS['TL_LANG']['FMD']['FacebookConnect']	= array('Facebook 1-Click-Connect', 'Creates a connection to Facebook for front end log in.');
+$GLOBALS['TL_LANG']['FMD']['FacebookConnect']	= array('Facebook Connect', 'Creates a connection to Facebook for front end log in.');
 
 /*
  * Miscellaneous
  */
 $GLOBALS['TL_LANG']['MSC']['fb_feMessage']		          = 'Login with Facebook';
-$GLOBALS['TL_LANG']['MSC']['fb_feMessageConnectAccount']  = 'Login with Facebook';
+$GLOBALS['TL_LANG']['MSC']['fb_feMessageConnectAccount']  = 'Connect account with Facebook';

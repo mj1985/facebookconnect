@@ -167,7 +167,7 @@ class ModuleFacebookConnect extends Module
                     unset($arrData['email']);       // Do not update member's eMail address
                     unset($arrData['language']);    // Do not update the language setting
                     $this->updateMember($objMember, $arrData);
-                    $this->log('User "' . $objMember->username . '" gained Facebook ID ' . $this->getFbUserId(), get_class($this) . ' ' . __FUNCTION__ . '()', TL_ACCESS);
+                    $this->log('User "' . $objMember->username . '" connected his/her account with Facebook ID ' . $this->getFbUserId(), get_class($this) . ' ' . __FUNCTION__ . '()', TL_ACCESS);
                 }
 
                 // Case 3: Facebook ID is known and linked to a local contao account --> Sync data
