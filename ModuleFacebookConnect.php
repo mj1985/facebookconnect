@@ -18,7 +18,8 @@
  * @package   FacebookConnect
  * @author    Mark Sturm
  * @author    Richard Henkenjohann
- * @copyright Mark Sturm 2013
+ * @author    Michael Fuchs - michael@derfuchs.net
+ * @copyright Mark Sturm, Michael Fuchs 2014
  * Special thanks to Andreas Schempp for autoregistration.
  */
 require_once(TL_ROOT . '/system/modules/FacebookConnect/assets/src/facebook.php');
@@ -177,7 +178,7 @@ class ModuleFacebookConnect extends Module
                     unset($arrData['activation']);  // Do not update the activation code
                     unset($arrData['username']);    // Do not update the username, maybe it changed by hand
                     unset($arrData['dateAdded']);   // Do not update the registration date
-                    unset($arrData['email']);       // Do not update member's eMail adress
+                    unset($arrData['email']);       // Do not update member's eMail address
                     unset($arrData['language']);    // Do not update the language setting
 
                     $this->updateMember($objMember, $arrData);
