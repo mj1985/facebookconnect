@@ -162,7 +162,9 @@ class ModuleFacebookConnect extends Module
                     && $arrData['email'])
                 {
                     unset($arrData['activation']);  // Do not update the activation code
+                    unset($arrData['username']);    // Do not update the username
                     unset($arrData['dateAdded']);   // Do not update the registration date
+                    unset($arrData['email']);       // Do not update member's eMail address
                     unset($arrData['language']);    // Do not update the language setting
                     $this->updateMember($objMember, $arrData);
                     $this->log('User "' . $objMember->username . '" gained Facebook ID ' . $this->getFbUserId(), get_class($this) . ' ' . __FUNCTION__ . '()', TL_ACCESS);
