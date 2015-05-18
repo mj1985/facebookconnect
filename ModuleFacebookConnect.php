@@ -119,6 +119,7 @@ class ModuleFacebookConnect extends Module
         if ($this->redirectBack)
             $this->Session->set('LAST_PAGE_VISITED', $this->getReferer());
 
+        $this->import('Files');
 
         $objFbAppCredentials = $this->getFbAppCredentials();
 
@@ -176,7 +177,7 @@ class ModuleFacebookConnect extends Module
                     && !empty($objMember->fb_user_id)
                     && !($this->fb_dontUpdateDatabase == '1')) {
                     unset($arrData['activation']);  // Do not update the activation code
-                    unset($arrData['username']);    // Do not update the username, maybe it changed by hand
+                    unset($arrData['username']);    // Do not update the username, maybe it has been changed by hand
                     unset($arrData['dateAdded']);   // Do not update the registration date
                     unset($arrData['email']);       // Do not update member's eMail address
                     unset($arrData['language']);    // Do not update the language setting
@@ -301,7 +302,7 @@ class ModuleFacebookConnect extends Module
     //--------------------------------------------------------------------------
 
     /**
-     * Generates a contao URL which shall be called after the user successfully
+     * Generates a contao URL which will be called after the user successfully
      * authenticated his Facebook connection.
      *
      * Either the last visited URL can be called or a special one which can be
@@ -363,7 +364,7 @@ class ModuleFacebookConnect extends Module
                 $arrData['dateAdded']   = $arrData['tstamp'];
                 $arrData['firstname']   = $arrFbUserData['first_name']; /* John */
                 $arrData['lastname']    = $arrFbUserData['last_name']; /* Smith */
-                $arrData['gender']      = $arrFbUserData['gender']; /* male */
+                $arrData['gender']      = $arrFbUserData['gender']; /* male,female */
                 $arrData['username']    = $this->buildMemberUserName($arrFbUserData);
                 $arrData['fb_user_id']  = $this->getFbUserId(); /* 1000012345678912 */
                 $arrData['login']       = '1';
@@ -476,40 +477,72 @@ class ModuleFacebookConnect extends Module
      */
     protected function addMember($arrMemberData)
     {
-
-        // Create the user
 		$objNewUser = new \MemberModel();
 		$objNewUser->setRow($arrMemberData);
 		$objNewUser->save();
 
+        $this->log('User "' . $arrMemberData['username'] . '" with Facebook ID "' . $this->getFbUserId() . '" has been created', get_class($this) . ' ' . __FUNCTION__ . '()', TL_ACCESS);
+    }
 
-        $this->log('User "' . $arrMemberData['username'] . '" with Facebook ID "' . $this->getFbUserId() . '" was created', get_class($this) . ' ' . __FUNCTION__ . '()', TL_ACCESS);
+    //--------------------------------------------------------------------------
 
-		if ($this->reg_assignDir)
+    /**
+     * creates a home directory for given fontend member
+     *
+     * @access protected
+     * @param object $objMember
+     * @return void
+     */
+    protected function createHomeDir($objMember)
+    {
+        $objHomeDir = \FilesModel::findByUuid($this->reg_homeDir);
+
+		if ($objHomeDir !== null && $this->getMemberDir($objMember) == null)
 		{
-			$objHomeDir = \FilesModel::findByUuid($this->reg_homeDir);
 
-			if ($objHomeDir !== null)
-			{
-    			$this->import('Files');
+            $strUserDir = $this->getMemberFolderName($objMember);
 
-                $strUserDir = 'user_' . $objNewUser->id;
+            // Create the user folder
+            new \Folder($objHomeDir->path . '/' . $strUserDir);
+            $objUserDir = \FilesModel::findByPath($objHomeDir->path . '/' . $strUserDir);
 
-                // Create the user folder
-                new \Folder($objHomeDir->path . '/' . $strUserDir);
-                $objUserDir = \FilesModel::findByPath($objHomeDir->path . '/' . $strUserDir);
+            // Save the folder ID
+            $objMember->assignDir = 1;
+            $objMember->homeDir = $objUserDir->uuid;
+            $objMember->save();
 
-                // Save the folder ID
-                $objNewUser->assignDir = 1;
-                $objNewUser->homeDir = $objUserDir->uuid;
-                $objNewUser->save();
+			$this->log('Homedir "' . $objUserDir->path . '" for user with Facebook ID "' . $this->getFbUserId() . '" has been created', get_class($this) . ' ' . __FUNCTION__ . '()', TL_ACCESS);
 
-    			$this->log('Homedir "' . $strUserDir . '" for user with Facebook ID "' . $this->getFbUserId() . '" was created', get_class($this) . ' ' . __FUNCTION__ . '()', TL_ACCESS);
+        }
+    }
 
-            }
+    //--------------------------------------------------------------------------
 
-		}
+    /**
+     * returns a contao file object of the member's home dir.
+     *
+     * @access protected
+     * @param object $objMember
+     * @return object
+     */
+    protected function getMemberDir($objMember)
+    {
+        $objHomeDir = \FilesModel::findByUuid($this->reg_homeDir);
+        return \FilesModel::findByPath($objHomeDir->path . '/' . $this->getMemberFolderName($objMember));
+    }
 
+    //--------------------------------------------------------------------------
+
+    /**
+     * returns the member's home dir name.
+     *
+     * @access protected
+     * @param object $objMember
+     * @return string
+     */
+    protected function getMemberFolderName($objMember)
+    {
+        return 'user_' . $objMember->id;;
     }
 
     //--------------------------------------------------------------------------
@@ -544,6 +577,10 @@ class ModuleFacebookConnect extends Module
         // Create new database object to make sure the current member is selected
         $objMember = $this->Database->prepare("SELECT id,username FROM tl_member WHERE fb_user_id=?")
                         ->execute($intFbUserId);
+
+        // create user dir if auto creation is enabled
+        if ($this->reg_assignDir)
+            $this->createHomeDir(\MemberModel::findBy('id', $objMember->id));
 
         // Set time variable
         $time = time();
