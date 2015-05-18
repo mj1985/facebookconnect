@@ -2,12 +2,14 @@
 
 /**
  * Contao Open Source CMS
- * 
+ *
  * Copyright (C) 2005-2013 Leo Feyer
- * 
- * @package FacebookConnect
- * @link    https://contao.org
- * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
+ *
+ * @package   FacebookConnect
+ * @author    Mark Sturm
+ * @author    Richard Henkenjohann
+ * @author    Michael Fuchs - michael@derfuchs.net
+ * @copyright Mark Sturm, Michael Fuchs 2014
  */
 
 

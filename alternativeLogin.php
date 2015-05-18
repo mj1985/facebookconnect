@@ -2,9 +2,9 @@
 
 /**
  * Contao Open Source CMS
- * 
+ *
  * Copyright (C) 2005-2013 Leo Feyer
- * 
+ *
  * @package FacebookConnect
  * @link    https://contao.org
  * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
@@ -12,11 +12,12 @@
 
 /**
  * Extends login module, allows Facebook ID and e-mail adress
- * 
+ *
  * @package   FacebookConnect
  * @author    Mark Sturm
  * @author    Richard Henkenjohann
- * @copyright Mark Sturm 2013
+ * @author    Michael Fuchs - michael@derfuchs.net
+ * @copyright Mark Sturm, Michael Fuchs 2014
  */
 class alternativeLogin extends Frontend
 {
@@ -28,7 +29,7 @@ class alternativeLogin extends Frontend
 	/**
 	 * Get the username
 	 */
-	public function getUsername($strUsername, $strPassword, $strTable) 
+	public function getUsername($strUsername, $strPassword, $strTable)
 	{
 		// Facebook ID
 		if(is_numeric($strUsername) && strlen($strUsername) > 9)
