@@ -322,17 +322,18 @@ class ModuleFacebookConnect extends Module
             $strRedirectUrl = $this->Session->get('LAST_PAGE_VISITED');
         }
         // Redirect to the jumpTo page
-        else
-        {
-            if (strlen($this->jumpTo))
-            {
+        else if (strlen($this->jumpTo)){
                 $objNextPage = $this->Database->prepare("SELECT id, alias FROM tl_page WHERE id=?")
                                     ->limit(1)
                                     ->execute($this->jumpTo);
 
                 if ($objNextPage->numRows)
                     $strRedirectUrl = $this->generateFrontendUrl($objNextPage->fetchAssoc());
-            }
+            
+        }
+        // Redirect to same page
+        else {
+        	$strRedirectUrl = \Environment::get('indexFreeRequest');
         }
 
         return $strRedirectUrl;
